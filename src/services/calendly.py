@@ -1,0 +1,35 @@
+import requests
+
+from src.definitions.credentials import Credentials
+
+
+class Calendly:
+    def __init__(self):
+        self._api_key = Credentials.calendly_api_key()
+        self.base_url = 'https://api.calendly.com'
+        self.headers = {
+            "Authorization": f"Bearer {self._api_key}",
+            "Content-Type": "application/json"
+        }
+        self.user_uri = self.get_user_uri()
+
+    def get_user_uri(self):
+        endpoint = self.base_url + "/users/me"
+        response = requests.get(endpoint, headers=self.headers)
+        return response.json()['resource']['uri']
+
+    def list_user_availability_schedules(self):
+        endpoint = self.base_url + "/user_availability_schedules"
+        params = {"user": self.user_uri}
+        response = requests.get(endpoint, params=params, headers=self.headers)
+        if response.status_code == 200:
+            response_json = response.json()
+            available_schedule = {}
+            schedules = response_json['collection'][0]['rules']
+            for schedule in schedules:
+                if len(schedule['intervals']) == 0:
+                    continue
+                available_schedule[schedule['wday']] = schedule['intervals']
+            return available_schedule
+        else:
+            print("Something went wrong")
