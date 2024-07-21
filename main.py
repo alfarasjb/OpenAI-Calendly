@@ -1,4 +1,5 @@
-
+from src.app.app import AppointmentSetterApp
 
 if __name__ == "__main__":
-    pass
+    app = AppointmentSetterApp()
+    app.main()
