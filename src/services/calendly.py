@@ -1,4 +1,5 @@
 import requests
+import json
 
 from src.definitions.credentials import Credentials
 
@@ -33,3 +34,13 @@ class Calendly:
             return available_schedule
         else:
             print("Something went wrong")
+
+    def get_user_event_types(self):
+        endpoint = self.base_url + "/event_types"
+        params = {"user": self.user_uri}
+        response = requests.get(endpoint, headers=self.headers, params=params)
+        if response.status_code:
+            event_uri = response.json()['collection'][0]['uri']
+
+        print(json.dumps(response.json(), indent=4))
+
