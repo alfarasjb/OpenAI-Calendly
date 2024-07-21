@@ -1,4 +1,5 @@
 import streamlit as st
+
 from src.services.chat import ChatModel
 
 
@@ -11,7 +12,6 @@ class Chat:
             st.session_state.messages = [
                 dict(role="assistant", content=f"Hello. How can i help you today?")
             ]
-        print(st.session_state.messages)
         # Display chat messages from history on app rerun.
         for message in st.session_state.messages:
             st.chat_message(message['role']).write(message['content'])

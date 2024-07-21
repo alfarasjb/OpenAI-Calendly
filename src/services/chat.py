@@ -1,6 +1,9 @@
-from openai import OpenAI
+import json
 
+from openai import OpenAI
 from src.definitions.credentials import EnvVariables, Credentials
+from src.utils.llm_functions import TOOLS
+from src.services.calendly import Calendly
 
 
 class ChatModel:
@@ -21,15 +24,41 @@ class ChatModel:
         response = self.model.chat.completions.create(
             model=self.chat_model,
             messages=messages,
-            response_format={"type": "text"},
             max_tokens=self.max_tokens,
-            temperature=0.5
+            temperature=0.5,
+            tools=tools,
+            tool_choice="auto"
         )
 
-        message = response.choices[0].message.content
-        self.chat_history.append(
-            {"role": "assistant", "content": message}
-        )
-        return message
+        response_message = response.choices[0].message
+        # Must add this. Otherwise, openai will throw a BadRequestError
+        messages.append(response_message)
+        print(messages)
 
+        tool_calls = response_message.tool_calls
+        if tool_calls:
+            tool_call_id = tool_calls[0].id
+            tool_function_name = tool_calls[0].function.name
+            func_dict = {
+                "role": "tool",
+                "tool_call_id": tool_call_id,
+                "name": tool_function_name
+            }
+            results = None
 
+            if tool_function_name == 'get_availability':
+                results = json.dumps(Calendly().list_user_availability_schedules())
+            else:
+                print("Function does not exist")
+                return
+            if results:
+                func_dict.update({"content": results})
+                messages.append(func_dict)
+                model_response_with_function_call = self.model.chat.completions.create(
+                    model=self.chat_model,
+                    messages=messages
+                )
+                return model_response_with_function_call.choices[0].message.content
+
+        else:
+            return response_message.content
