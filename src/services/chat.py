@@ -26,7 +26,7 @@ class ChatModel:
             messages=messages,
             max_tokens=self.max_tokens,
             temperature=0.5,
-            tools=tools,
+            tools=TOOLS,
             tool_choice="auto"
         )
 
@@ -46,7 +46,7 @@ class ChatModel:
             }
             results = None
 
-            if tool_function_name == 'get_availability':
+            if tool_function_name == 'get_calendly_availability':
                 results = json.dumps(Calendly().list_user_availability_schedules())
             else:
                 print("Function does not exist")

@@ -1,5 +1,6 @@
 import requests
 import json
+from typing import Dict, List
 
 from src.definitions.credentials import Credentials
 
@@ -31,9 +32,17 @@ class Calendly:
                 if len(schedule['intervals']) == 0:
                     continue
                 available_schedule[schedule['wday']] = schedule['intervals']
-            return available_schedule
+            return self.to_readable_schedule(available_schedule)
         else:
             print("Something went wrong")
+
+    def to_readable_schedule(self, schedule: Dict[str, any]):
+        schedules = []
+        for day, times in schedule.items():
+            schedules.append(day)
+            for time in times:
+                schedules.append(f" - {time['from']} - {time['to']}")
+        return '\n'.join(schedules)
 
     def get_user_event_types(self):
         endpoint = self.base_url + "/event_types"
