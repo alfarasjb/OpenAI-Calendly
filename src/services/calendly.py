@@ -24,7 +24,7 @@ class Calendly:
             "Content-Type": "application/json"
         }
         self.user_uri = self.get_user_uri()
-        self.last_recorded_customer_name = ""
+        self.last_recorded_email_address = ""
         self.last_recorded_meeting_start = ""
         self.last_recorded_meeting_end = ""
 
@@ -69,20 +69,20 @@ class Calendly:
 
         print(json.dumps(response.json(), indent=4))
 
-    def set_meeting(self, meeting_start: str, meeting_end: str, customer_name: str) -> bool:
+    def set_meeting(self, meeting_start: str, meeting_end: str, email_address: str) -> bool:
         # Ignore empty inputs
-        if meeting_start == "" or meeting_end == "" or customer_name == "":
+        if meeting_start == "" or meeting_end == "" or email_address == "":
             logger.error(f"Failed to set meeting. Meeting information cannot be empty. Meeting Start: {meeting_start}, "
-                         f"Meeting End: {meeting_end}, Customer Name: {customer_name}")
+                         f"Meeting End: {meeting_end}, Customer Name: {email_address}")
             return False
         # Ignore repeat requests
         if (self.last_recorded_meeting_start == meeting_start and
                 self.last_recorded_meeting_end == meeting_end and
-                self.last_recorded_customer_name == customer_name):
+                self.last_recorded_email_address == email_address):
             logger.error(f"Failed to set meeting. Duplicate requests")
             return False
         self.last_recorded_meeting_start = meeting_start
         self.last_recorded_meeting_end = meeting_end
-        self.last_recorded_customer_name = customer_name
-        logger.info(f"Setting meeting for: {customer_name} from {meeting_start} to {meeting_end}")
-        return self.google.create_meeting(meeting_start, meeting_end)
+        self.last_recorded_email_address = email_address
+        logger.info(f"Setting meeting for: {email_address} from {meeting_start} to {meeting_end}")
+        return self.google.create_meeting(meeting_start, meeting_end, email_address)
