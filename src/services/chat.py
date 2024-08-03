@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 # TODO: History seems to not work properly.
+# TODO: System prompt
+
 
 class ChatModel:
     def __init__(self):
