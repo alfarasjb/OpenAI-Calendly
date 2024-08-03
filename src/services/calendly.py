@@ -4,6 +4,10 @@ from typing import Dict, List
 
 from src.definitions.credentials import Credentials
 
+# NOTE: Calendly does not have an endpoint to support scheduling events.
+# Must use a different option
+# https://developer.calendly.com/frequently-asked-questions
+
 
 class Calendly:
     def __init__(self):
@@ -26,18 +30,20 @@ class Calendly:
         response = requests.get(endpoint, params=params, headers=self.headers)
         if response.status_code == 200:
             response_json = response.json()
+            print(json.dumps(response_json, indent=4))
             available_schedule = {}
             schedules = response_json['collection'][0]['rules']
+            timezone = response_json['collection'][0]['timezone']
             for schedule in schedules:
                 if len(schedule['intervals']) == 0:
                     continue
                 available_schedule[schedule['wday']] = schedule['intervals']
-            return self.to_readable_schedule(available_schedule)
+            return self.to_readable_schedule(available_schedule, timezone)
         else:
             print("Something went wrong")
 
-    def to_readable_schedule(self, schedule: Dict[str, any]):
-        schedules = []
+    def to_readable_schedule(self, schedule: Dict[str, any], timezone: str):
+        schedules = [f"Timezone: {timezone}"]
         for day, times in schedule.items():
             schedules.append(day)
             for time in times:
