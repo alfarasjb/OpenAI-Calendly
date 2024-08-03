@@ -16,6 +16,8 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+# TODO: History seems to not work properly.
+
 class ChatModel:
     def __init__(self):
         self.tools = TOOLS  # Add tools here

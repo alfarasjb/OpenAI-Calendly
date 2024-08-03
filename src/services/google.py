@@ -35,12 +35,13 @@ class GoogleAPI:
             events_result = self.calendar.events().list(
                 calendarId="primary",
                 timeMin=time,
-                maxResults=1,
+                maxResults=10,
                 singleEvents=True,
                 orderBy="startTime"
             ).execute()
 
             events = events_result.get("items", [])
+            print(events)
             if not events:
                 logger.info("No upcoming events found.")
                 return False

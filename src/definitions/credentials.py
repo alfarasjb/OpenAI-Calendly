@@ -19,6 +19,7 @@ class Credentials:
     def google_token(cls) -> str:
         return os.getenv("GOOGLE_TOKEN")
 
+
 class EnvVariables:
     @classmethod
     def chat_model(cls) -> str:

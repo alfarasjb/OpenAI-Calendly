@@ -1,6 +1,7 @@
 import json
 import logging
 from typing import Dict
+from datetime import datetime as dt, timedelta
 
 import requests
 
@@ -69,7 +70,14 @@ class Calendly:
 
         print(json.dumps(response.json(), indent=4))
 
-    def set_meeting(self, meeting_start: str, meeting_end: str, email_address: str) -> bool:
+    @staticmethod
+    def get_meeting_end_timestamp(meeting_start: str):
+        meeting_start_datetime = dt.fromisoformat(meeting_start)
+        meeting_start_datetime += timedelta(minutes=30)
+        return meeting_start_datetime.isoformat()
+
+    def set_meeting(self, meeting_start: str, email_address: str) -> bool:
+        meeting_end = self.get_meeting_end_timestamp(meeting_start)
         # Ignore empty inputs
         if meeting_start == "" or meeting_end == "" or email_address == "":
             logger.error(f"Failed to set meeting. Meeting information cannot be empty. Meeting Start: {meeting_start}, "
