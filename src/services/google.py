@@ -66,7 +66,7 @@ class GoogleAPI:
         try:
             event = {
                 "summary": "30 minute Consultancy Call",
-                "description": "PioneerDevAI Consulting Call",
+                "description": "Consultancy Call",
                 "colorId": 6,
                 "start": {
                     "dateTime": meeting_start,

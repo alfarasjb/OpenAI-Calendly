@@ -11,6 +11,9 @@ from langchain_openai import ChatOpenAI
 
 from src.definitions.credentials import Credentials, EnvVariables
 from src.utils.llm_functions import TOOLS
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ChatModel:
@@ -31,6 +34,7 @@ class ChatModel:
         self.qa = AgentExecutor(agent=self.chain, tools=self.tools, verbose=False, memory=self.memory)
 
     def init_chat_model(self) -> ChatOpenAI:
+        logger.info(f"Initializing chat model. Model: {EnvVariables.chat_model()}")
         return ChatOpenAI(
             model=EnvVariables.chat_model(),
             temperature=0.7,
@@ -39,8 +43,10 @@ class ChatModel:
         )
 
     def chat(self, user_prompt: str) -> Optional[str]:
+        logger.info(f"User Chat: {user_prompt}")
         if not user_prompt:
             return
         result = self.qa.invoke({"input": user_prompt})
         answer = result['output']
+        logger.info(f"AI Response: {answer}")
         return answer

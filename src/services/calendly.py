@@ -1,7 +1,8 @@
-import requests
 import json
-from typing import Dict, List
 import logging
+from typing import Dict
+
+import requests
 
 from src.definitions.credentials import Credentials
 from src.services.google import GoogleAPI
@@ -33,6 +34,7 @@ class Calendly:
         return response.json()['resource']['uri']
 
     def list_user_availability_schedules(self):
+        logger.info("Getting user availability schedules..")
         endpoint = self.base_url + "/user_availability_schedules"
         params = {"user": self.user_uri}
         response = requests.get(endpoint, params=params, headers=self.headers)
@@ -48,7 +50,7 @@ class Calendly:
             # return self.to_readable_schedule(available_schedule, timezone)
             return available_schedule
         else:
-            print("Something went wrong")
+            logger.info("Something went wrong..")
 
     def to_readable_schedule(self, schedule: Dict[str, any], timezone: str):
         schedules = [f"Timezone: {timezone}"]
