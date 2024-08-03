@@ -15,6 +15,9 @@ class Credentials:
     def calendly_api_key(cls) -> str:
         return os.getenv("CALENDLY_API_KEY")
 
+    @classmethod
+    def google_token(cls) -> str:
+        return os.getenv("GOOGLE_TOKEN")
 
 class EnvVariables:
     @classmethod
