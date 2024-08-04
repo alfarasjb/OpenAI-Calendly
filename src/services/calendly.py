@@ -1,6 +1,6 @@
 import json
 import logging
-from typing import Dict
+from typing import Dict, Optional, Any
 from datetime import datetime as dt, timedelta
 
 import requests
@@ -29,12 +29,12 @@ class Calendly:
         self.last_recorded_meeting_start = ""
         self.last_recorded_meeting_end = ""
 
-    def get_user_uri(self):
+    def get_user_uri(self) -> str:
         endpoint = self.base_url + "/users/me"
         response = requests.get(endpoint, headers=self.headers)
         return response.json()['resource']['uri']
 
-    def list_user_availability_schedules(self):
+    def list_user_availability_schedules(self) -> Optional[Dict[str, Any]]:
         logger.info("Getting user availability schedules..")
         endpoint = self.base_url + "/user_availability_schedules"
         params = {"user": self.user_uri}
@@ -53,7 +53,7 @@ class Calendly:
         else:
             logger.info("Something went wrong..")
 
-    def to_readable_schedule(self, schedule: Dict[str, any], timezone: str):
+    def to_readable_schedule(self, schedule: Dict[str, any], timezone: str) -> str:
         schedules = [f"Timezone: {timezone}"]
         for day, times in schedule.items():
             schedules.append(day)
@@ -67,11 +67,10 @@ class Calendly:
         response = requests.get(endpoint, headers=self.headers, params=params)
         if response.status_code:
             event_uri = response.json()['collection'][0]['uri']
-
         print(json.dumps(response.json(), indent=4))
 
     @staticmethod
-    def get_meeting_end_timestamp(meeting_start: str):
+    def get_meeting_end_timestamp(meeting_start: str) -> str:
         meeting_start_datetime = dt.fromisoformat(meeting_start)
         meeting_start_datetime += timedelta(minutes=30)
         return meeting_start_datetime.isoformat()

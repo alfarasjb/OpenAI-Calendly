@@ -1,6 +1,8 @@
 import json
 import logging
 from datetime import datetime
+from typing import Optional
+from googleapiclient.discovery import Resource
 from dateutil import parser
 
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -19,18 +21,18 @@ class GoogleAPI:
         self._credentials = self._authenticate()
         self.calendar = self._calendar()
 
-    def _authenticate(self):
+    def _authenticate(self) -> Credentials:
         token_json = json.loads(Creds.google_token())
         creds = Credentials.from_authorized_user_info(token_json, scopes=self.scopes)
         return creds
 
-    def _calendar(self):
+    def _calendar(self) -> Optional[Resource]:
         try:
             return build(serviceName="calendar", version="v3", credentials=self._credentials)
         except Exception as e:
             logger.error(f"Failed to generate calendar. An unknown error occurred: {e}")
 
-    def existing_events(self, time: str) -> bool:
+    def existing_events(self, time: str) -> Optional[bool]:
         try:
             events_result = self.calendar.events().list(
                 calendarId="primary",
@@ -65,7 +67,7 @@ class GoogleAPI:
         with open("token.json", "w") as token:
             token.write(creds.to_json())
 
-    def create_meeting(self, meeting_start: str, meeting_end: str, email_address: str):
+    def create_meeting(self, meeting_start: str, meeting_end: str, email_address: str) -> bool:
         # Time format: ISO 8601
         # Check for conflicts
         conflicts = self.existing_events(meeting_start)

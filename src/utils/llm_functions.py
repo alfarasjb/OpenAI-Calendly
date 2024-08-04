@@ -37,6 +37,7 @@ class CheckConflictInput(BaseModel):
 Function Declarations 
 """
 
+
 @tool
 def get_current_availability():
     """Gets current availability using the CalendlyAPI"""
@@ -44,7 +45,7 @@ def get_current_availability():
 
 
 @tool(args_schema=SetMeetingInput)
-def set_meeting(meeting_start: str, email_address: str):
+def set_meeting(meeting_start: str, email_address: str) -> bool:
     """Books a 30-minute meeting on Google Calendar"""
     logger.info(f"Set meeting function called. Start: {meeting_start}, Email: {email_address}")
     return CALENDLY.set_meeting(
